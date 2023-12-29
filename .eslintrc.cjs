@@ -17,7 +17,7 @@ module.exports = {
   env: {
     browser: true,
     commonjs: true,
-    es6: true,
+    es2024: true,
   },
 
   // Base config
@@ -77,4 +77,9 @@ module.exports = {
       },
     },
   ],
+  rules: {
+    "no-console": ["warn", { allow: ["warn", "error"] }],
+    "max-len": ["error", { code: 200 }],
+    "no-plusplus": ["error", { allowForLoopAfterthoughts: true }],
+  },
 };
