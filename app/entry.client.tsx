@@ -6,6 +6,7 @@
 
 import { RemixBrowser } from "@remix-run/react";
 import { startTransition, StrictMode } from "react";
+import "bootstrap";
 import { hydrateRoot } from "react-dom/client";
 
 startTransition(() => {
@@ -13,6 +14,6 @@ startTransition(() => {
     document,
     <StrictMode>
       <RemixBrowser />
-    </StrictMode>
+    </StrictMode>,
   );
 });
