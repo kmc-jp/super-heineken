@@ -3,11 +3,13 @@
  * You are free to delete this file if you'd like to, but if you ever want it revealed again, you can run `npx remix reveal` ✨
  * For more information, see https://remix.run/file-conventions/entry.client
  */
-
+import { config } from "@fortawesome/fontawesome-svg-core";
 import { RemixBrowser } from "@remix-run/react";
-import { startTransition, StrictMode } from "react";
 import "bootstrap";
+import { StrictMode, startTransition } from "react";
 import { hydrateRoot } from "react-dom/client";
+
+config.autoAddCss = false;
 
 startTransition(() => {
   hydrateRoot(
