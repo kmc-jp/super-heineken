@@ -1,0 +1,3 @@
+.PagerItem:not(.disabled) > span {
+  cursor: pointer;
+}
