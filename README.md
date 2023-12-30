@@ -1,29 +1,33 @@
-# Welcome to Remix!
+# Heineken
 
-- [Remix Docs](https://remix.run/docs)
+Hayai Kensaku webapp (ver.2) built with [Remix](https://remix.run/docs).
 
 ## Development
 
-From your terminal:
+Recommended to open with devcontainer:
 
-```sh
-npm run dev
+```
+$ devcontainer open .
 ```
 
-This starts your app in development mode, rebuilding assets on file changes.
+To start the development server:
+
+```
+$ npm run dev
+```
 
 ## Deployment
 
 First, build your app for production:
 
-```sh
-npm run build
+```
+$ npm run build
 ```
 
 Then run the app in production mode:
 
-```sh
-npm start
+```
+$ npm start
 ```
 
 Now you'll need to pick a host to deploy it to.
@@ -36,3 +40,9 @@ Make sure to deploy the output of `remix build`
 
 - `build/`
 - `public/build/`
+
+## Related projects
+
+- Crawler
+
+https://github.com/kmc-jp/heineken-crawler
