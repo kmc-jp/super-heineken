@@ -1,5 +1,5 @@
-import styles from "./Help.css";
-import { MetaFunction } from "@remix-run/node";
+import styles from "./help.css";
+import { LinksFunction, MetaFunction } from "@remix-run/node";
 
 export const meta: MetaFunction = () => {
   return [{ title: "Help - Heineken" }];
@@ -9,6 +9,10 @@ export const links: LinksFunction = () => [{ rel: "stylesheet", href: styles }];
 
 interface HelpContentProps {
   title: string;
+  // content or [usePtag, content].
+  // デフォルトでは content は p tag で囲まれます
+  // div など p tag の中に入れてはいけない Element を置きたいときは、
+  // content の代わりに usePtag を false にした array を設定してください
   contents: (string | [boolean, string])[];
 }
 
@@ -51,7 +55,7 @@ function HelpListContent(props: HelpContentProps) {
 export default function Help() {
   return (
     <div className="Help">
-      <div className="row">
+      <div className="row pt-1 pb-2">
         <h1>Heineken help</h1>
       </div>
       <HelpContent
@@ -70,7 +74,7 @@ export default function Help() {
         ]}
       />
       <HelpContent
-        title="Advanced モードを使う"
+        title="検索構文・例（Advanced モード）"
         contents={[
           `Advanced モードでは、直接 Query string を記述することになるため、Elasitcsearch でインデックスしているドキュメントのフィールド名を知る必要があります。`,
           `Query string の基本的な構文については、
