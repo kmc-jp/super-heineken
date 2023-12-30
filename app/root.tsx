@@ -1,6 +1,7 @@
 import HeinekenError from "./components/heineken-error";
 import Navbar from "./navbar";
 import styles from "./root.css";
+// Required to supress size change on the first icon load
 import "@fortawesome/fontawesome-svg-core/styles.css";
 import { cssBundleHref } from "@remix-run/css-bundle";
 import type { LinksFunction, MetaFunction } from "@remix-run/node";
