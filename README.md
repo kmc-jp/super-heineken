@@ -33,6 +33,12 @@ $ npm start
 
 Now you'll need to pick a host to deploy it to.
 
+Note: You can connect to KMC elasticsearch from local by `kubectl port-forward`
+
+```
+$ kubectl port-forward services/heineken-elasticsearch 9200 9200
+```
+
 ### DIY
 
 If you're familiar with deploying node applications, the built-in Remix app server is production-ready.
