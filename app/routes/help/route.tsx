@@ -195,7 +195,7 @@ export default function Help() {
       <HelpListContent
         title="ソースコード"
         contents={[
-          `<a href='https://github.com/kmc-jp/heineken2/'>Heineken (GitHub)</a>`,
+          `<a href='https://github.com/kmc-jp/super-heineken/'>Heineken (GitHub)</a>`,
           `<a href='https://github.com/kmc-jp/heineken-crawler/'>Heineken cralwler (GitHub)</a>`,
         ]}
       />

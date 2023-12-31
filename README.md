@@ -1,6 +1,6 @@
 # Heineken
 
-Hayai Kensaku webapp (ver.2) built with [Remix](https://remix.run/docs).
+Hayai Kensaku webapp (ver.2; it means super!) built with [Remix](https://remix.run/docs).
 
 ## Development
 
