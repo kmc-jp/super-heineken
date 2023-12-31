@@ -1,0 +1,164 @@
+export function truncate(text: string, max: number) {
+  if (text.length > max) return text.substring(0, max) + "\u2026";
+  else return text;
+}
+
+export const ELASTIC_SEARCH_MAX_SEARCH_WINDOW = 10000;
+
+const ELASTIC_QUERY_STRING_ESACPE_CHARS = ['"', "\\"];
+
+// Baisis: Split by space and call them as words. Words are joined with AND and quote all them
+// Rule 1: Quoted strings is regarded as a word (even if space-included).
+// Rule 3: - in the start of a word is allowed to negative query
+// Rule 2: \ is escape string
+
+type CharType = "quote" | "minus" | "space" | "char";
+type TokenState = "quoted" | "unquoted" | "noword" | "quoteend";
+
+export function toQueryString(query: string) {
+  const chars: [CharType, string][] = [];
+  for (let i = 0; i < query.length; i++) {
+    const char = query[i];
+    const escaped = i > 0 && query[i - 1] === "\\";
+    if (escaped) {
+      chars.push(["char", char]);
+      continue;
+    }
+
+    switch (char) {
+      case "-":
+        chars.push(["minus", char]);
+        break;
+      case '"':
+        chars.push(["quote", char]);
+        break;
+      case " ":
+        chars.push(["space", char]);
+        break;
+      case "\\":
+        // Esscape -> ignore
+        break;
+      default:
+        chars.push(["char", char]);
+        break;
+    }
+  }
+
+  const words: [string, positive: boolean][] = [];
+  let state: TokenState = "noword";
+  let currentWord = "";
+  let positive = true;
+
+  const endWord = () => {
+    words.push([currentWord, positive]);
+    currentWord = "";
+    positive = true;
+  };
+
+  for (const [type, char] of chars) {
+    switch (type) {
+      case "char":
+        switch (state) {
+          case "quoted":
+          case "unquoted":
+            currentWord += char;
+            break;
+          case "noword":
+            state = "unquoted";
+            currentWord += char;
+            break;
+          case "quoteend":
+            throw Error(
+              "Query parse error: 単語と単語の間はスペースを入れてください",
+            );
+        }
+        break;
+
+      case "minus":
+        switch (state) {
+          case "quoted":
+          case "unquoted":
+            currentWord += char; // Treat as a normal char in words
+            break;
+          case "noword":
+            positive = false;
+            break;
+          case "quoteend":
+            throw Error(
+              "Query parse error: 単語と単語の間はスペースを入れてください",
+            );
+        }
+        break;
+
+      case "space":
+        switch (state) {
+          case "quoted":
+            currentWord += char;
+            break;
+          case "unquoted":
+            endWord();
+            state = "noword";
+            break;
+          case "noword":
+            if (!positive) {
+              throw Error(
+                "Query parse error: '-' は単語の直前か単語内にのみ配置できます",
+              );
+            }
+            break;
+          case "quoteend":
+            state = "noword";
+            break;
+        }
+        break;
+
+      case "quote":
+        switch (state) {
+          case "quoted":
+            endWord();
+            state = "quoteend";
+            break;
+          case "unquoted":
+            throw Error(
+              "Query parse error: '\"' を単語内で用いる場合は '\\' でエスケープしてください",
+            );
+          case "noword":
+            state = "quoted";
+            break;
+          case "quoteend":
+            throw Error(
+              "Query parse error: 単語と単語の間はスペースを入れてください",
+            );
+        }
+        break;
+    }
+  }
+
+  // End
+  switch (state) {
+    case "quoted":
+      throw Error("Query parse error: '\"' の対応が合いません");
+    case "unquoted":
+      endWord();
+      break;
+    case "noword":
+    case "quoteend":
+      break;
+  }
+
+  for (const [word] of words) {
+    if (word.length < 2) {
+      throw Error("Query error: 各単語の長さは 2 以上にしてください");
+    }
+  }
+
+  return words
+    .map(([word, positive]) => {
+      let escaped = word;
+      for (const char of ELASTIC_QUERY_STRING_ESACPE_CHARS) {
+        escaped = escaped.replaceAll(char, "\\" + char);
+      }
+      return `${positive ? "" : "-"}"${escaped}"`;
+    })
+    .join(" AND ");
+}

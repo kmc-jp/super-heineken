@@ -1,11 +1,17 @@
 import styles from "./help.css";
 import { LinksFunction, MetaFunction } from "@remix-run/node";
+import { useLoaderData } from "@remix-run/react";
 
 export const meta: MetaFunction = () => {
   return [{ title: "Help - Heineken" }];
 };
 
 export const links: LinksFunction = () => [{ rel: "stylesheet", href: styles }];
+
+export const loader = async () => {
+  const pukiwikiBaseURL = process.env.HEINEKEN_PUKIWIKI_BASE_URL!;
+  return { pukiwikiBaseURL };
+};
 
 interface HelpContentProps {
   title: string;
@@ -19,7 +25,7 @@ interface HelpContentProps {
 function HelpContent(props: HelpContentProps) {
   return (
     <div className="row justify-content-center">
-      <div className="col-sm-10 col-sm-offset-1">
+      <div className="col-sm-10 offset-sm-1">
         <h2>{props.title}</h2>
         {props.contents.map((v, i) => {
           const content = Array.isArray(v) ? v[1] : v;
@@ -40,7 +46,7 @@ function HelpContent(props: HelpContentProps) {
 function HelpListContent(props: HelpContentProps) {
   return (
     <div className="row justify-content-center">
-      <div className="col-sm-10 col-sm-offset-1">
+      <div className="col-sm-10 offset-sm-1">
         <h2>{props.title}</h2>
         <ul>
           {props.contents.map((v, i) => (
@@ -53,6 +59,8 @@ function HelpListContent(props: HelpContentProps) {
 }
 
 export default function Help() {
+  const { pukiwikiBaseURL } = useLoaderData<typeof loader>();
+
   return (
     <div className="Help">
       <div className="row pt-1 pb-2">
@@ -68,9 +76,9 @@ export default function Help() {
         title="検索モード"
         contents={[
           `Heineken では、検索時に 2 つのモードがあります。1 つは通常利用のための Simple モード、もう一つは Advanced モードです。`,
-          `Simple モードでは、単語をスペース区切りにして AND で検索します（Quote ("") で囲まれている場合はスペース区切りを行いません）。
-          タイトルなどのフィールド指定や期間の指定といったことはできません。`,
-          `Advanced モードでは、与えられたクエリを Elasticsearch の Query string にそのまま渡します。日時の指定など、より柔軟な検索が可能になります。`,
+          `Simple モードでは、単語をスペース区切りにして AND で検索します。タイトルなどのフィールド指定や期間の指定といったことはできません。`,
+          `なお、 "-" を単語の先頭につけることで除外検索ができます。また、Quote ("") で囲まれている場合はスペース区切りを行いません。"\\" はエスケープを意味します。`,
+          `Advanced モードでは、上記のような Heineken の独自仕様はなく、与えられたクエリを Elasticsearch の Query string にそのまま渡します。日時の指定など、より柔軟な検索が可能になります。`,
         ]}
       />
       <HelpContent
@@ -80,7 +88,7 @@ export default function Help() {
           `Query string の基本的な構文については、
            <a href='https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html#query-string-syntax'>Elasticsearch のドキュメント</a>
            を見て下さい。`,
-          `例えば、<code>AND</code> や <code>OR</code> , <code>||</code> などの記号が使えます。正規表現は使えると書いてありますが、
+          `例えば、Operator として <code>AND</code> や <code>OR</code> , <code>||</code> などの記号が使えます。デフォルトでは <code>AND</code> です。正規表現は使えると書いてありますが、
               index 方式の都合により2字以上3字以下にしか使えません。使い物になりませんね。`,
           `なお、検索のインデックス方式の都合から、テキストは必ず Quote ("") で囲んでください。`,
           [false, `<h3>PukiWiki</h3>`],
@@ -164,7 +172,7 @@ export default function Help() {
             false,
             `<div class="card">
               <div class="card-body">
-                "OB会" -body:会長
+                "OB会" -body:"会長"
               </div>
             </div>`,
           ],
@@ -174,7 +182,7 @@ export default function Help() {
         title="その他"
         contents={[
           `Index の都合により 1 文字では検索できません。
-          <a href="https://inside.kmc.gr.jp/wiki/?cmd=search">PukiWiki の検索機能</a>
+          <a href="${pukiwikiBaseURL}?cmd=search">PukiWiki の検索機能</a>
            を使って下さい。`,
           `<code>C#</code> や <code>C++</code> といった記号でも検索可能です。`,
           `更新されたばかりのページはクロールされるまで検索に出ません。`,

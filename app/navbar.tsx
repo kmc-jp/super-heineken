@@ -23,7 +23,7 @@ export default function Navbar() {
         <div id="navbar" className="collapse navbar-collapse">
           <div className="navbar-nav">
             <NavLink to="/search/pukiwiki" className="nav-item nav-link">
-              Pukiwiki
+              PukiWiki
             </NavLink>
             <NavLink to="/search/mail" className="nav-item nav-link">
               Mail

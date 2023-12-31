@@ -13,6 +13,7 @@ $ devcontainer open .
 To start the development server:
 
 ```
+$ cp .env.example .env
 $ npm run dev
 ```
 

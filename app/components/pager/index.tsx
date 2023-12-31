@@ -1,6 +1,5 @@
 import styles from "./index.css";
 import { LinksFunction } from "@remix-run/node";
-import { Link } from "@remix-run/react";
 import { ReactNode } from "react";
 
 export const links: LinksFunction = () => [{ rel: "stylesheet", href: styles }];
@@ -10,10 +9,17 @@ interface PagerItemProps {
   currentPage: number;
   page: number;
   disabled: boolean;
-  getLinkTo: (page: number) => string;
+  onNewPage: (page: number) => void;
 }
 
 function PagerItem(props: PagerItemProps) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const handleClick = () => {
+    if (!props.disabled) {
+      props.onNewPage(props.page);
+    }
+  };
+
   const bstClass = props.disabled
     ? "disabled"
     : props.currentPage === props.page
@@ -21,10 +27,10 @@ function PagerItem(props: PagerItemProps) {
       : "";
 
   return (
-    <li className={"PagerItem page-item" + bstClass}>
-      <Link className="page-link" to={props.getLinkTo(props.page)}>
+    <li className={"PagerItem page-item " + bstClass}>
+      <span className="page-link" onClick={handleClick}>
         {props.children || props.page}
-      </Link>
+      </span>
     </li>
   );
 }
@@ -32,7 +38,7 @@ function PagerItem(props: PagerItemProps) {
 interface PagerProps {
   currentPage: number;
   totalPages: number;
-  getItemLinkTo: (page: number) => string;
+  onNewPage: (page: number) => void;
 }
 
 // for pc
@@ -54,7 +60,7 @@ function PagerDefault(props: PagerProps) {
         currentPage={props.currentPage}
         page={current - 1}
         disabled={current <= 1}
-        getLinkTo={props.getItemLinkTo}
+        onNewPage={props.onNewPage}
       >
         Prev
       </PagerItem>
@@ -69,7 +75,7 @@ function PagerDefault(props: PagerProps) {
         currentPage={props.currentPage}
         page={current + 1}
         disabled={current >= props.totalPages}
-        getLinkTo={props.getItemLinkTo}
+        onNewPage={props.onNewPage}
       >
         Next
       </PagerItem>
@@ -80,22 +86,24 @@ function PagerDefault(props: PagerProps) {
   // if you use multiple divider, specify key
   const divider = (key: string = "divider") => {
     return (
-      <li className="disabled" key={key}>
-        <a>&hellip;</a>
+      <li className="PagerItem page-item disabled" key={key}>
+        <span className="page-link">&hellip;</span>
       </li>
     );
   };
 
   const numberedItemList = (start: number, end: number) => {
-    return new Array(end - start + 1)
-      .map((i) => i + start)
+    return [...new Array(end - start + 1)]
+      .map((v, i) => {
+        return i + start;
+      })
       .map((page) => (
         <PagerItem
           key={page}
           currentPage={props.currentPage}
           page={page}
           disabled={false}
-          getLinkTo={props.getItemLinkTo}
+          onNewPage={props.onNewPage}
         />
       ));
   };
@@ -149,9 +157,11 @@ function PagerDefault(props: PagerProps) {
   }
 
   return (
-    <div className="text-center PageListPagerDefault d-none d-sm-block">
+    <div className="PageListPagerDefault d-none d-sm-block">
       <nav>
-        <ul className="pagination">{[prevItem(), ...child, nextItem()]}</ul>
+        <ul className="pagination justify-content-center">
+          {[prevItem(), ...child, nextItem()]}
+        </ul>
       </nav>
     </div>
   );
@@ -177,33 +187,33 @@ function PagerXS(props: PagerProps) {
       : current + 2;
 
   return (
-    <div className="text-center PageListPagerXS d-block d-sm-none">
+    <div className="PageListPagerXS d-block d-sm-none">
       <nav>
-        <ul className="pagination">
+        <ul className="pagination justify-content-center">
           <PagerItem
             currentPage={props.currentPage}
             page={current - 1}
             disabled={current <= 1}
-            getLinkTo={props.getItemLinkTo}
+            onNewPage={props.onNewPage}
           >
             &lt;
           </PagerItem>
-          {new Array(end - start + 1)
-            .map((i) => i + start)
+          {[...new Array(end - start + 1)]
+            .map((v, i) => i + start)
             .map((page) => (
               <PagerItem
                 key={page}
                 currentPage={props.currentPage}
                 page={page}
                 disabled={false}
-                getLinkTo={props.getItemLinkTo}
+                onNewPage={props.onNewPage}
               />
             ))}
           <PagerItem
             currentPage={props.currentPage}
             page={current + 1}
             disabled={current >= total}
-            getLinkTo={props.getItemLinkTo}
+            onNewPage={props.onNewPage}
           >
             &gt;
           </PagerItem>
