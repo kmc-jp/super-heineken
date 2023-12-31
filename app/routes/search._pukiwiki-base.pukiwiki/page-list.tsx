@@ -13,7 +13,9 @@ interface PageListItemProps {
 }
 
 function PageListItem(props: PageListItemProps) {
-  const dateStr = new Date(props.page.modified).toLocaleString("ja-JP");
+  const dateStr = new Date(props.page.modified).toLocaleString("ja-JP", {
+    timeZone: "Asia/Tokyo",
+  });
   return (
     <div className="row PageListItem mb-2">
       <div className="col-sm-10 offset-sm-1">
