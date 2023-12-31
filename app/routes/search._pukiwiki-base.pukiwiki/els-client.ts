@@ -1,13 +1,6 @@
 import { Page, PageResult } from "./models";
 import { toQueryString } from "~/utils";
 
-interface PukiWikiSearch {
-  query?: string;
-  order: string;
-  page: number;
-  useRawQuery: boolean;
-}
-
 export const SEARCH_SIZE = 35;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -30,28 +23,39 @@ export function createPageResultFromResponse(json: any): PageResult {
   };
 }
 
-// (SearchQuery) => promise
-export async function requestSearch(search: PukiWikiSearch) {
-  let query: string;
-  if (search.query == null || search.query == "") {
-    query = "*";
+export function buildPukiWikiSearch(
+  order: string,
+  page: number,
+  useRawQuery: boolean,
+  query?: string,
+) {
+  let queryString: string;
+  if (query == null || query == "") {
+    queryString = "*";
   } else {
-    query = search.useRawQuery ? search.query : toQueryString(search.query);
+    queryString = useRawQuery ? query : toQueryString(query);
   }
-  return _requestSearch(
-    query,
-    SEARCH_SIZE,
-    (search.page - 1) * SEARCH_SIZE,
-    search.order,
-  );
+  return {
+    query: queryString,
+    size: SEARCH_SIZE,
+    from: (page - 1) * SEARCH_SIZE,
+    order: order,
+  };
 }
 
-async function _requestSearch(
-  query: string,
-  size: number,
-  from: number,
-  order: string,
-) {
+interface PukiWikiSearch {
+  query: string;
+  size: number;
+  from: number;
+  order: string;
+}
+
+export async function requestSearch({
+  query,
+  size,
+  from,
+  order,
+}: PukiWikiSearch) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const queryJson: any = {
     query: {
@@ -134,8 +138,9 @@ async function _requestSearch(
 
   const response = await fetch(url);
   if (!response.ok) {
-    throw new Error(
+    throw new Response(
       `Invalid response from the backend elasticsearch server: ${response.statusText}`,
+      { status: 500 },
     );
   }
   const json = await response.json();

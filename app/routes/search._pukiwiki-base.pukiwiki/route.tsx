@@ -1,5 +1,5 @@
 // Elasticsearch 起因のエラーを表示する Component をわけるために route を分けている
-import { SEARCH_SIZE, requestSearch } from "./els-client";
+import { SEARCH_SIZE, buildPukiWikiSearch, requestSearch } from "./els-client";
 import { PageResult } from "./models";
 import { PageList, links as pageListLinks } from "./page-list";
 import { LinksFunction, LoaderFunctionArgs, defer } from "@remix-run/node";
@@ -23,12 +23,9 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   const searchParams = new URL(request.url).searchParams;
   const { query, page, order, advanced } = parseSearchParams(searchParams);
 
-  const pageResult = requestSearch({
-    query,
-    order,
-    page,
-    useRawQuery: advanced,
-  });
+  // async 内で throw Response するとうまくいかないのでパースは non-async でやる
+  const search = buildPukiWikiSearch(order, page, advanced, query);
+  const pageResult = requestSearch(search);
 
   const pukiwikiBaseURL = process.env.HEINEKEN_PUKIWIKI_BASE_URL!;
 

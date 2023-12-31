@@ -68,8 +68,9 @@ export function toQueryString(query: string) {
             currentWord += char;
             break;
           case "quoteend":
-            throw Error(
+            throw new Response(
               "Query parse error: 単語と単語の間はスペースを入れてください",
+              { status: 400 },
             );
         }
         break;
@@ -84,8 +85,9 @@ export function toQueryString(query: string) {
             positive = false;
             break;
           case "quoteend":
-            throw Error(
+            throw new Response(
               "Query parse error: 単語と単語の間はスペースを入れてください",
+              { status: 400 },
             );
         }
         break;
@@ -101,8 +103,9 @@ export function toQueryString(query: string) {
             break;
           case "noword":
             if (!positive) {
-              throw Error(
+              throw new Response(
                 "Query parse error: '-' は単語の直前か単語内にのみ配置できます",
+                { status: 400 },
               );
             }
             break;
@@ -119,15 +122,17 @@ export function toQueryString(query: string) {
             state = "quoteend";
             break;
           case "unquoted":
-            throw Error(
+            throw new Response(
               "Query parse error: '\"' を単語内で用いる場合は '\\' でエスケープしてください",
+              { status: 400 },
             );
           case "noword":
             state = "quoted";
             break;
           case "quoteend":
-            throw Error(
+            throw new Response(
               "Query parse error: 単語と単語の間はスペースを入れてください",
+              { status: 400 },
             );
         }
         break;
@@ -137,7 +142,9 @@ export function toQueryString(query: string) {
   // End
   switch (state) {
     case "quoted":
-      throw Error("Query parse error: '\"' の対応が合いません");
+      throw new Response("Query parse error: '\"' の対応が合いません", {
+        status: 400,
+      });
     case "unquoted":
       endWord();
       break;
@@ -148,7 +155,9 @@ export function toQueryString(query: string) {
 
   for (const [word] of words) {
     if (word.length < 2) {
-      throw Error("Query error: 各単語の長さは 2 以上にしてください");
+      throw new Response("Query error: 各単語の長さは 2 以上にしてください", {
+        status: 400,
+      });
     }
   }
 
