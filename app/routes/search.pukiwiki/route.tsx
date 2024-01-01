@@ -1,8 +1,13 @@
-// Elasticsearch 起因のエラーを表示する Component をわけるために route を分けている
 import { SEARCH_SIZE, buildPukiWikiSearch, requestSearch } from "./els-client";
 import { PageResult } from "./models";
 import { PageList, links as pageListLinks } from "./page-list";
-import { LinksFunction, LoaderFunctionArgs, defer } from "@remix-run/node";
+import { SearchBox, links as searchBoxLinks } from "./search-box";
+import {
+  LinksFunction,
+  LoaderFunctionArgs,
+  MetaFunction,
+  defer,
+} from "@remix-run/node";
 import {
   Await,
   isRouteErrorResponse,
@@ -14,16 +19,25 @@ import {
 import { Suspense } from "react";
 import HeinekenError from "~/components/heineken-error";
 import { Pager, links as pagerLinks } from "~/components/pager";
+import { StatusIndicator } from "~/components/status-indicator";
 import { ELASTIC_SEARCH_MAX_SEARCH_WINDOW } from "~/utils";
 import { parseSearchParams, setNewPage } from "~/utils/pukiwiki";
 
-export const links: LinksFunction = () => [...pagerLinks(), ...pageListLinks()];
+export const meta: MetaFunction = () => {
+  return [{ title: "PukiWiki - Heineken" }];
+};
+
+export const links: LinksFunction = () => [
+  ...searchBoxLinks(),
+  ...pagerLinks(),
+  ...pageListLinks(),
+];
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const searchParams = new URL(request.url).searchParams;
   const { query, page, order, advanced } = parseSearchParams(searchParams);
 
-  // async 内で throw Response するとうまくいかないのでパースは non-async でやる
+  // async 内で throw Response すると Errorboundary の Error がうまくとれないのでパースは non-async でやる
   const search = buildPukiWikiSearch(order, page, advanced, query);
   const pageResult = requestSearch(search);
 
@@ -32,9 +46,34 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   return defer({ pageResult, pukiwikiBaseURL });
 };
 
+const createSearchBox = (params: URLSearchParams) => {
+  const { query, order, advanced } = parseSearchParams(params);
+  return (
+    <SearchBox
+      order={order}
+      defaultQuery={query || ""}
+      defaultAdvanced={advanced}
+    />
+  );
+};
+
+const createRequestingStatusIndicator = (params: URLSearchParams) => {
+  const { page } = parseSearchParams(params);
+  return (
+    <StatusIndicator
+      currentPage={page}
+      totalCount={undefined}
+      requesting={true}
+      overMaxWindow={false}
+    />
+  );
+};
+
 export function ErrorBoundary() {
   const err = useRouteError();
   console.error(err);
+  const [searchParams] = useSearchParams();
+
   const msg = isRouteErrorResponse(err)
     ? err.data
     : err instanceof Error
@@ -42,18 +81,23 @@ export function ErrorBoundary() {
       : String(err);
 
   return (
-    <div className="row mt-4">
-      <HeinekenError error={msg} />
+    <div className="PukiWiki">
+      {createSearchBox(searchParams)}
+      <div className="row">{createRequestingStatusIndicator(searchParams)}</div>
+      <div className="row mt-4">
+        <HeinekenError error={msg} />
+      </div>
     </div>
   );
 }
 
-export default function PukiWikiResult() {
+export default function PukiWiki() {
+  const navigation = useNavigation();
+  const requesting = navigation.state !== "idle";
+
   const [searchParams, setSearchParams] = useSearchParams();
   const { page } = parseSearchParams(searchParams);
   const { pageResult, pukiwikiBaseURL } = useLoaderData<typeof loader>();
-  const { state } = useNavigation();
-  const requesting = state !== "idle";
 
   const onNewPage = (page: number) => {
     setSearchParams((prev) => {
@@ -81,7 +125,30 @@ export default function PukiWikiResult() {
   };
 
   return (
-    <div className="PukiWikiResult">
+    <div className="PukiWiki">
+      {createSearchBox(searchParams)}
+      <div className="row">
+        <Suspense fallback={createRequestingStatusIndicator(searchParams)}>
+          <Await resolve={pageResult}>
+            {(pr) => (
+              <StatusIndicator
+                currentPage={page}
+                totalCount={pr.totalCount}
+                requesting={requesting}
+                overMaxWindow={ELASTIC_SEARCH_MAX_SEARCH_WINDOW < pr.totalCount}
+              />
+            )}
+          </Await>
+        </Suspense>
+        {/* <SortButton
+          data={
+            new SortButtonPropsData(
+              data.searchQuery.order,
+              this.constructor.sorts,
+            )
+          }
+        /> */}
+      </div>
       <div>
         {requesting ? (
           <div />
