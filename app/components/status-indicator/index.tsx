@@ -20,13 +20,14 @@ export function StatusIndicator(props: StatusIndicatorProps) {
     text = `${pageStr}${props.totalCount!} hits`;
   }
   return (
-    <div className="col-sm-5 offset-sm-1 col-xs-7 StatusIndicator">
+    <div className="col-7 offset-sm-1 StatusIndicator">
       <p>
         <FontAwesomeIcon icon={faChartSimple} />
         &ensp;{text}&ensp;
         <span
-          hidden={!props.overMaxWindow}
-          className={"small" + (props.overMaxWindow ? "" : " hidden")}
+          className={
+            "small d-none" + (props.overMaxWindow ? " d-sm-inline-block" : "")
+          }
         >
           （{ELASTIC_SEARCH_MAX_SEARCH_WINDOW + 1}件目以上は表示されません）
         </span>

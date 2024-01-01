@@ -17,11 +17,12 @@ import {
   useSearchParams,
 } from "@remix-run/react";
 import { Suspense } from "react";
+import Select from "react-select";
 import HeinekenError from "~/components/heineken-error";
 import { Pager, links as pagerLinks } from "~/components/pager";
 import { StatusIndicator } from "~/components/status-indicator";
 import { ELASTIC_SEARCH_MAX_SEARCH_WINDOW } from "~/utils";
-import { parseSearchParams, setNewPage } from "~/utils/pukiwiki";
+import { parseSearchParams, setNewOrder, setNewPage } from "~/utils/pukiwiki";
 
 export const meta: MetaFunction = () => {
   return [{ title: "PukiWiki - Heineken" }];
@@ -46,6 +47,21 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   return defer({ pageResult, pukiwikiBaseURL });
 };
 
+const sortOrderOptions = [
+  { value: "s", label: "Score" },
+  { value: "m", label: "Modified" },
+  { value: "ta", label: "Title asc" },
+  { value: "td", label: "Title desc" },
+];
+
+const getOrderOption = (val: string) => {
+  const option = sortOrderOptions.find(({ value }) => value === val);
+  if (option === undefined) {
+    throw Error(`value ${val} is not found on sortOrderOptions`);
+  }
+  return option;
+};
+
 const createSearchBox = (params: URLSearchParams) => {
   const { query, order, advanced } = parseSearchParams(params);
   return (
@@ -54,6 +70,34 @@ const createSearchBox = (params: URLSearchParams) => {
       defaultQuery={query || ""}
       defaultAdvanced={advanced}
     />
+  );
+};
+
+// @ts-expect-error SetURLSearchParams type is not exported
+const createOrderSelect = (params: URLSearchParams, setSearchParams) => {
+  const { order } = parseSearchParams(params);
+
+  const onNewOrder = (order: string) => {
+    // @ts-expect-error SetURLSearchParams type is not exported
+    setSearchParams((prev) => {
+      setNewOrder(prev, order);
+      return prev;
+    });
+  };
+
+  return (
+    <>
+      <div className="col-auto ms-auto text-end">
+        <Select
+          options={sortOrderOptions}
+          value={getOrderOption(order)}
+          onChange={(e) => onNewOrder(e!.value)}
+        />
+      </div>
+
+      {/* Dummy col for end offset */}
+      <div className="col-sm-1" />
+    </>
   );
 };
 
@@ -72,7 +116,7 @@ const createRequestingStatusIndicator = (params: URLSearchParams) => {
 export function ErrorBoundary() {
   const err = useRouteError();
   console.error(err);
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const msg = isRouteErrorResponse(err)
     ? err.data
@@ -83,7 +127,10 @@ export function ErrorBoundary() {
   return (
     <div className="PukiWiki">
       {createSearchBox(searchParams)}
-      <div className="row">{createRequestingStatusIndicator(searchParams)}</div>
+      <div className="row">
+        {createRequestingStatusIndicator(searchParams)}
+        {createOrderSelect(searchParams, setSearchParams)}
+      </div>
       <div className="row mt-4">
         <HeinekenError error={msg} />
       </div>
@@ -93,6 +140,9 @@ export function ErrorBoundary() {
 
 export default function PukiWiki() {
   const navigation = useNavigation();
+  // Susponse の fallback は search params の変化では起こらないので、
+  // ページ変更などのときは 自前で navigation.state を見る必要がある
+  // https://github.com/remix-run/react-router/discussions/8914#discussioncomment-5774149
   const requesting = navigation.state !== "idle";
 
   const [searchParams, setSearchParams] = useSearchParams();
@@ -113,7 +163,7 @@ export default function PukiWiki() {
       Math.floor(ELASTIC_SEARCH_MAX_SEARCH_WINDOW / SEARCH_SIZE),
     );
     return (
-      <div>
+      <div className="mt-3">
         <PageList pageResult={pageResult} pukiwikiBaseURL={pukiwikiBaseURL} />
         <Pager
           currentPage={page}
@@ -140,24 +190,15 @@ export default function PukiWiki() {
             )}
           </Await>
         </Suspense>
-        {/* <SortButton
-          data={
-            new SortButtonPropsData(
-              data.searchQuery.order,
-              this.constructor.sorts,
-            )
-          }
-        /> */}
+
+        {createOrderSelect(searchParams, setSearchParams)}
       </div>
-      <div>
-        {requesting ? (
-          <div />
-        ) : (
-          <Suspense fallback={<div />}>
-            <Await resolve={pageResult}>{(pr) => render(pr)}</Await>
-          </Suspense>
-        )}
-      </div>
+
+      {requesting ? null : (
+        <Suspense fallback={null}>
+          <Await resolve={pageResult}>{(pr) => render(pr)}</Await>
+        </Suspense>
+      )}
     </div>
   );
 }
