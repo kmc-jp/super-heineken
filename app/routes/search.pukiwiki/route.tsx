@@ -16,6 +16,7 @@ import {
   useRouteError,
   useSearchParams,
 } from "@remix-run/react";
+import { IndicatorSeparator } from "node_modules/react-select/dist/declarations/src/components/indicators";
 import { Suspense } from "react";
 import Select from "react-select";
 import HeinekenError from "~/components/heineken-error";
@@ -92,6 +93,7 @@ const createOrderSelect = (params: URLSearchParams, setSearchParams) => {
           options={sortOrderOptions}
           value={getOrderOption(order)}
           onChange={(e) => onNewOrder(e!.value)}
+          components={{ IndicatorSeparator: () => null }}
         />
       </div>
 
