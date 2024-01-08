@@ -17,9 +17,9 @@ import {
   useSearchParams,
 } from "@remix-run/react";
 import { Suspense } from "react";
-import Select from "react-select";
 import HeinekenError from "~/components/heineken-error";
 import { Pager, links as pagerLinks } from "~/components/pager";
+import SortButton from "~/components/sort-button";
 import { StatusIndicator } from "~/components/status-indicator";
 import { ELASTIC_SEARCH_MAX_SEARCH_WINDOW } from "~/utils";
 import { parseSearchParams, setNewOrder, setNewPage } from "~/utils/pukiwiki";
@@ -47,21 +47,6 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   return defer({ pageResult, pukiwikiBaseURL });
 };
 
-const sortOrderOptions = [
-  { value: "s", label: "Score" },
-  { value: "m", label: "Modified" },
-  { value: "ta", label: "Title asc" },
-  { value: "td", label: "Title desc" },
-];
-
-const getOrderOption = (val: string) => {
-  const option = sortOrderOptions.find(({ value }) => value === val);
-  if (option === undefined) {
-    throw Error(`value ${val} is not found on sortOrderOptions`);
-  }
-  return option;
-};
-
 const createSearchBox = (params: URLSearchParams) => {
   const { query, order, advanced } = parseSearchParams(params);
   return (
@@ -85,21 +70,7 @@ const createOrderSelect = (params: URLSearchParams, setSearchParams) => {
     });
   };
 
-  return (
-    <>
-      <div className="col-auto ms-auto text-end">
-        <Select
-          options={sortOrderOptions}
-          value={getOrderOption(order)}
-          onChange={(e) => onNewOrder(e!.value)}
-          components={{ IndicatorSeparator: () => null }}
-        />
-      </div>
-
-      {/* Dummy col for end offset */}
-      <div className="col-md-1" />
-    </>
-  );
+  return <SortButton defaultOrder={order} onNewOrder={onNewOrder} />;
 };
 
 const createRequestingStatusIndicator = (params: URLSearchParams) => {
