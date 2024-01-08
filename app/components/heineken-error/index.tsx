@@ -8,7 +8,7 @@ interface HeinekenErrorProps {
 export default function HeinekenError(props: HeinekenErrorProps) {
   return (
     <div className="HeinekenError">
-      <div className="alert alert-danger col-sm-10 offset-sm-1" role="alert">
+      <div className="alert alert-danger col-md-10 offset-md-1" role="alert">
         <FontAwesomeIcon icon={faTriangleExclamation} />
         &ensp;{props.error}
       </div>

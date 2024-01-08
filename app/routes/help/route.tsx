@@ -25,7 +25,7 @@ interface HelpContentProps {
 function HelpContent(props: HelpContentProps) {
   return (
     <div className="row justify-content-center">
-      <div className="col-sm-10 offset-sm-1">
+      <div className="col-md-10 offset-md-1">
         <h2>{props.title}</h2>
         {props.contents.map((v, i) => {
           const content = Array.isArray(v) ? v[1] : v;
@@ -46,7 +46,7 @@ function HelpContent(props: HelpContentProps) {
 function HelpListContent(props: HelpContentProps) {
   return (
     <div className="row justify-content-center">
-      <div className="col-sm-10 offset-sm-1">
+      <div className="col-md-10 offset-md-1">
         <h2>{props.title}</h2>
         <ul>
           {props.contents.map((v, i) => (

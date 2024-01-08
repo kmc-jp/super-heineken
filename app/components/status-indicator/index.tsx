@@ -20,7 +20,7 @@ export function StatusIndicator(props: StatusIndicatorProps) {
     text = `${pageStr}${props.totalCount!} hits`;
   }
   return (
-    <div className="col-7 offset-sm-1 StatusIndicator">
+    <div className="col-7 offset-md-1 StatusIndicator">
       <p>
         <FontAwesomeIcon icon={faChartSimple} />
         &ensp;{text}&ensp;

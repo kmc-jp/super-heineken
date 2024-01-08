@@ -16,7 +16,6 @@ import {
   useRouteError,
   useSearchParams,
 } from "@remix-run/react";
-import { IndicatorSeparator } from "node_modules/react-select/dist/declarations/src/components/indicators";
 import { Suspense } from "react";
 import Select from "react-select";
 import HeinekenError from "~/components/heineken-error";
@@ -98,7 +97,7 @@ const createOrderSelect = (params: URLSearchParams, setSearchParams) => {
       </div>
 
       {/* Dummy col for end offset */}
-      <div className="col-sm-1" />
+      <div className="col-md-1" />
     </>
   );
 };

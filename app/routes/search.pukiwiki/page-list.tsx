@@ -18,7 +18,7 @@ function PageListItem(props: PageListItemProps) {
   });
   return (
     <div className="row PageListItem mb-2">
-      <div className="col-sm-10 offset-sm-1">
+      <div className="col-md-10 offset-md-1">
         <a
           href={createPukiwikiUrl(
             props.pukiwikiBaseURL,

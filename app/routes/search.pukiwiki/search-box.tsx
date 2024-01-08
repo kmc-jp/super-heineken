@@ -25,7 +25,7 @@ export function SearchBox(props: SearchBoxProps) {
 
   return (
     <div className="SearchBox row">
-      <div className="col-sm-8 offset-sm-2 mt-4 mt-sm-5 mb-4">
+      <div className="col-md-8 offset-md-2 mt-4 mt-sm-5 mb-4">
         <Form action="/search/pukiwiki" preventScrollReset>
           <div className="input-group input-group-lg">
             <input
