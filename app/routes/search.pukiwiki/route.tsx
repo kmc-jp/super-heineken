@@ -24,8 +24,9 @@ import { StatusIndicator } from "~/components/status-indicator";
 import { ELASTIC_SEARCH_MAX_SEARCH_WINDOW } from "~/utils";
 import { parseSearchParams, setNewOrder, setNewPage } from "~/utils/pukiwiki";
 
-export const meta: MetaFunction = () => {
-  return [{ title: "PukiWiki - Heineken" }];
+export const meta: MetaFunction = ({ location }) => {
+  const { query } = parseSearchParams(new URLSearchParams(location.search));
+  return [{ title: `${query ? `${query} - ` : ""}PukiWiki - Heineken` }];
 };
 
 export const links: LinksFunction = () => [
