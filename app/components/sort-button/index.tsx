@@ -1,15 +1,13 @@
 import { useEffect, useState } from "react";
 import Select from "react-select";
 
-const sortOrderOptions = [
-  { value: "s", label: "Score" },
-  { value: "m", label: "Modified" },
-  { value: "ta", label: "Title asc" },
-  { value: "td", label: "Title desc" },
-];
+interface SortOrderOption {
+  value: string;
+  label: string;
+}
 
-const getOrderOption = (val: string) => {
-  const option = sortOrderOptions.find(({ value }) => value === val);
+const getOrderOption = (options: SortOrderOption[], val: string) => {
+  const option = options.find(({ value }) => value === val);
   if (option === undefined) {
     throw Error(`value ${val} is not found on sortOrderOptions`);
   }
@@ -17,6 +15,7 @@ const getOrderOption = (val: string) => {
 };
 
 interface SortButtonProps {
+  options: SortOrderOption[];
   defaultOrder: string;
   onNewOrder: (order: string) => void;
 }
@@ -33,8 +32,8 @@ export default function SortButton(props: SortButtonProps) {
     <>
       <div className="col-auto ms-auto text-end ps-0">
         <Select
-          options={sortOrderOptions}
-          value={getOrderOption(order)}
+          options={props.options}
+          value={getOrderOption(props.options, order)}
           onChange={(e) => {
             setOrder(order);
             props.onNewOrder(e!.value);

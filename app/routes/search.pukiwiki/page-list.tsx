@@ -1,9 +1,9 @@
 import { Page, PageResult } from "./models";
 import styles from "./page-list.css";
+import { createPukiwikiUrl } from "./utils";
 import { faCalendar } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { LinksFunction } from "@remix-run/node";
-import { createPukiwikiUrl } from "~/utils/pukiwiki";
 
 export const links: LinksFunction = () => [{ rel: "stylesheet", href: styles }];
 

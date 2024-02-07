@@ -7,10 +7,10 @@ export const ELASTIC_SEARCH_MAX_SEARCH_WINDOW = 10000;
 
 const ELASTIC_QUERY_STRING_ESACPE_CHARS = ['"', "\\"];
 
-// Baisis: Split by space and call them as words. Words are joined with AND and quote all them
+// Baisis: Split by space and call them as words. Words are joined with AND and quoted
 // Rule 1: Quoted strings is regarded as a word (even if space-included).
-// Rule 3: - in the start of a word is allowed to negative query
-// Rule 2: \ is escape string
+// Rule 2: - in the start of a word is allowed to negative query
+// Rule 3: \ is escape string
 
 type CharType = "quote" | "minus" | "space" | "char";
 type TokenState = "quoted" | "unquoted" | "noword" | "quoteend";

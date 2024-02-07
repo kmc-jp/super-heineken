@@ -1,6 +1,6 @@
-import { SEARCH_SIZE, buildPukiWikiSearch, requestSearch } from "./els-client";
-import { PageResult } from "./models";
-import { PageList, links as pageListLinks } from "./page-list";
+import { SEARCH_SIZE, buildMailSearch, requestSearch } from "./els-client";
+import { MessageList, links as pageListLinks } from "./message-list";
+import { MessageResult } from "./models";
 import { SearchBox, links as searchBoxLinks } from "./search-box";
 import { parseSearchParams, setNewOrder, setNewPage } from "./utils";
 import {
@@ -26,14 +26,12 @@ import { ELASTIC_SEARCH_MAX_SEARCH_WINDOW } from "~/utils";
 
 const sortOrderOptions = [
   { value: "s", label: "Score" },
-  { value: "m", label: "Modified" },
-  { value: "ta", label: "Title asc" },
-  { value: "td", label: "Title desc" },
+  { value: "d", label: "Date" },
 ];
 
 export const meta: MetaFunction = ({ location }) => {
   const { query } = parseSearchParams(new URLSearchParams(location.search));
-  return [{ title: `${query ? `${query} - ` : ""}PukiWiki - Heineken` }];
+  return [{ title: `${query ? `${query} - ` : ""}Mail - Heineken` }];
 };
 
 export const links: LinksFunction = () => [
@@ -44,15 +42,27 @@ export const links: LinksFunction = () => [
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const searchParams = new URL(request.url).searchParams;
-  const { query, page, order, advanced } = parseSearchParams(searchParams);
+
+  const defaultCategories = process.env
+    .HEINEKEN_MAIL_DEFAULT_CATEGORIES!.split(",")
+    .filter((v) => v !== "");
+
+  const { query, page, order, categories, advanced } =
+    parseSearchParams(searchParams);
 
   // async 内で throw Response すると Errorboundary の Error がうまくとれないのでパースは non-async でやる
-  const search = buildPukiWikiSearch(order, page, advanced, query);
-  const pageResult = requestSearch(search);
+  const search = buildMailSearch(
+    order,
+    page,
+    categories ?? defaultCategories,
+    advanced,
+    query,
+  );
+  const messageResult = requestSearch(search);
 
-  const pukiwikiBaseURL = process.env.HEINEKEN_PUKIWIKI_BASE_URL!;
+  const mailBaseURL = process.env.HEINEKEN_MAIL_BASE_URL!;
 
-  return defer({ pageResult, pukiwikiBaseURL });
+  return defer({ messageResult, mailBaseURL });
 };
 
 const createSearchBox = (params: URLSearchParams) => {
@@ -124,7 +134,7 @@ export function ErrorBoundary() {
   );
 }
 
-export default function PukiWiki() {
+export default function Mail() {
   const navigation = useNavigation();
   // Susponse の fallback は search params の変化では起こらないので、
   // ページ変更などのときは 自前で navigation.state を見る必要がある
@@ -133,7 +143,7 @@ export default function PukiWiki() {
 
   const [searchParams, setSearchParams] = useSearchParams();
   const { page } = parseSearchParams(searchParams);
-  const { pageResult, pukiwikiBaseURL } = useLoaderData<typeof loader>();
+  const { messageResult, mailBaseURL } = useLoaderData<typeof loader>();
 
   const onNewPage = (page: number) => {
     setSearchParams((prev) => {
@@ -142,15 +152,15 @@ export default function PukiWiki() {
     });
   };
 
-  const render = (pageResult: PageResult) => {
+  const render = (messageResult: MessageResult) => {
     // We cannot search over the window limit of elasticsearch.
     const totalPages = Math.min(
-      Math.ceil(pageResult.totalCount / SEARCH_SIZE),
+      Math.ceil(messageResult.totalCount / SEARCH_SIZE),
       Math.floor(ELASTIC_SEARCH_MAX_SEARCH_WINDOW / SEARCH_SIZE),
     );
     return (
       <div className="mt-3">
-        <PageList pageResult={pageResult} pukiwikiBaseURL={pukiwikiBaseURL} />
+        <MessageList messageResult={messageResult} mailBaseURL={mailBaseURL} />
         <Pager
           currentPage={page}
           totalPages={totalPages}
@@ -165,13 +175,13 @@ export default function PukiWiki() {
       {createSearchBox(searchParams)}
       <div className="row">
         <Suspense fallback={createRequestingStatusIndicator(searchParams)}>
-          <Await resolve={pageResult}>
-            {(pr) => (
+          <Await resolve={messageResult}>
+            {(mr) => (
               <StatusIndicator
                 currentPage={page}
-                totalCount={pr.totalCount}
+                totalCount={mr.totalCount}
                 requesting={requesting}
-                overMaxWindow={ELASTIC_SEARCH_MAX_SEARCH_WINDOW < pr.totalCount}
+                overMaxWindow={ELASTIC_SEARCH_MAX_SEARCH_WINDOW < mr.totalCount}
               />
             )}
           </Await>
@@ -182,7 +192,7 @@ export default function PukiWiki() {
 
       {requesting ? null : (
         <Suspense fallback={null}>
-          <Await resolve={pageResult}>{(pr) => render(pr)}</Await>
+          <Await resolve={messageResult}>{(mr) => render(mr)}</Await>
         </Suspense>
       )}
     </div>

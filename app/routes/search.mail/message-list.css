@@ -1,0 +1,14 @@
+.MessageListItem a {
+  display: inline-block;
+  text-decoration: none;
+  max-width: 100%;
+}
+.MessageListItem a h3:hover {
+  text-decoration: underline;
+}
+
+.MessageListItem p.small {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
