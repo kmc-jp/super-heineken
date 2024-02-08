@@ -25,11 +25,11 @@ export default function Navbar() {
             <NavLink to="/search/pukiwiki" className="nav-item nav-link">
               PukiWiki
             </NavLink>
-            <NavLink to="/search/mail" className="nav-item nav-link">
-              Mail
-            </NavLink>
             <NavLink to="/search/scrapbox" className="nav-item nav-link">
               ScrapBox
+            </NavLink>
+            <NavLink to="/search/mail" className="nav-item nav-link">
+              Mail
             </NavLink>
             <NavLink to="/help" className="nav-item nav-link">
               Help
