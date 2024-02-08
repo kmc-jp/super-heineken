@@ -99,15 +99,6 @@ export async function requestSearch({
             },
           },
         },
-        {
-          script_score: {
-            // boost by title length (jakkan)
-            script: {
-              inline:
-                "_score / Math.sqrt(Math.log1p(doc['title.keyword'].value.length()))",
-            },
-          },
-        },
       ];
       break;
   }
