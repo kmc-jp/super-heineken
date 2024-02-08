@@ -176,6 +176,42 @@ export default function Help() {
               </div>
             </div>`,
           ],
+          [false, `<h3>Scrapbox</h3>`],
+          `検索できるカラムは <code>title</code> （タイトル）、 <code>modified</code> （更新日時）、 <code>body</code> （内容） です。
+            デフォルト（クエリ上で、フィールドを何も指定しない状態）では <code>title</code> と <code>body</code> で検索されます。
+            フィールド名を指定することで、その他のカラムを用いて検索できます。`,
+          [
+            false,
+            `<div class="card">
+              <div class="card-body">
+                body:"環境構築" title:"kubernetes"
+              </div>
+            </div>`,
+          ],
+          [
+            false,
+            `<div class="card">
+              <div class="card-body">
+                "Kubernetes" modified:[2021-01-01 TO 2023-04-04]
+              </div>
+            </div>`,
+          ],
+          [
+            false,
+            `<div class="card">
+              <div class="card-body">
+                ("Kubernetes" OR "k8s") AND "metallb"
+              </div>
+            </div>`,
+          ],
+          [
+            false,
+            `<div class="card">
+              <div class="card-body">
+                "Kubernetes" -body:"k8s"
+              </div>
+            </div>`,
+          ],
         ]}
       />
       <HelpListContent
