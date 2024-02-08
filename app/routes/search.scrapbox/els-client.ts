@@ -23,7 +23,7 @@ export function createPageResultFromResponse(json: any): PageResult {
   };
 }
 
-export function buildScrapBoxSearch(
+export function buildScrapboxSearch(
   order: string,
   page: number,
   useRawQuery: boolean,
@@ -43,7 +43,7 @@ export function buildScrapBoxSearch(
   };
 }
 
-interface ScrapBoxSearch {
+interface ScrapboxSearch {
   query: string;
   size: number;
   from: number;
@@ -55,7 +55,7 @@ export async function requestSearch({
   size,
   from,
   order,
-}: ScrapBoxSearch) {
+}: ScrapboxSearch) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const queryJson: any = {
     query: {

@@ -1,6 +1,6 @@
 import { Page, PageResult } from "./models";
 import styles from "./page-list.css";
-import { createScrapBoxUrl } from "./utils";
+import { createScrapboxUrl } from "./utils";
 import { faCalendar } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { LinksFunction } from "@remix-run/node";
@@ -20,7 +20,7 @@ function PageListItem(props: PageListItemProps) {
   return (
     <div className="row PageListItem mb-2">
       <div className="col-md-10 offset-md-1">
-        <a href={createScrapBoxUrl(props.scrapboxBaseURL, props.page.title)}>
+        <a href={createScrapboxUrl(props.scrapboxBaseURL, props.page.title)}>
           <h3>{props.page.title}</h3>
         </a>
         <p className="small mb-2">

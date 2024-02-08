@@ -1,4 +1,4 @@
-export function createScrapBoxUrl(baseUrl: string, title: string) {
+export function createScrapboxUrl(baseUrl: string, title: string) {
   const titleUrlEncoded = encodeURIComponent(title);
   const url = new URL(titleUrlEncoded, baseUrl);
   return url.toString();

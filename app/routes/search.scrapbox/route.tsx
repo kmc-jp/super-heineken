@@ -1,4 +1,4 @@
-import { SEARCH_SIZE, buildScrapBoxSearch, requestSearch } from "./els-client";
+import { SEARCH_SIZE, buildScrapboxSearch, requestSearch } from "./els-client";
 import { PageResult } from "./models";
 import { PageList, links as pageListLinks } from "./page-list";
 import { SearchBox, links as searchBoxLinks } from "./search-box";
@@ -33,7 +33,7 @@ const sortOrderOptions = [
 
 export const meta: MetaFunction = ({ location }) => {
   const { query } = parseSearchParams(new URLSearchParams(location.search));
-  return [{ title: `${query ? `${query} - ` : ""}ScrapBox - Heineken` }];
+  return [{ title: `${query ? `${query} - ` : ""}Scrapbox - Heineken` }];
 };
 
 export const links: LinksFunction = () => [
@@ -47,7 +47,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   const { query, page, order, advanced } = parseSearchParams(searchParams);
 
   // async 内で throw Response すると Errorboundary の Error がうまくとれないのでパースは non-async でやる
-  const search = buildScrapBoxSearch(order, page, advanced, query);
+  const search = buildScrapboxSearch(order, page, advanced, query);
   const pageResult = requestSearch(search);
 
   const scrapboxBaseURL = process.env.HEINEKEN_SCRAPBOX_BASE_URL!;
@@ -124,7 +124,7 @@ export function ErrorBoundary() {
   );
 }
 
-export default function ScrapBox() {
+export default function Scrapbox() {
   const navigation = useNavigation();
   // Susponse の fallback は search params の変化では起こらないので、
   // ページ変更などのときは 自前で navigation.state を見る必要がある

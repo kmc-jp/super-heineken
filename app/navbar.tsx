@@ -26,7 +26,7 @@ export default function Navbar() {
               PukiWiki
             </NavLink>
             <NavLink to="/search/scrapbox" className="nav-item nav-link">
-              ScrapBox
+              Scrapbox
             </NavLink>
             <NavLink to="/search/mail" className="nav-item nav-link">
               Mail
