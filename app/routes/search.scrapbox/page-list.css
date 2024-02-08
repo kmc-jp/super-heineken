@@ -1,0 +1,15 @@
+.PageListItem a h3 {
+  display: inline-block;
+  text-decoration: none;
+  max-width: 100%;
+}
+
+.PageListItem a h3:hover {
+  text-decoration: underline;
+}
+
+.PageListItem p.small {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
