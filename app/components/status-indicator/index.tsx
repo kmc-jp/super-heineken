@@ -19,7 +19,7 @@ export function StatusIndicator(props: StatusIndicatorProps) {
     text = `${pageStr}${props.totalCount!}${props.overMaxWindow ? "+" : ""} hits`;
   }
   return (
-    <div className="col-7 offset-md-1 StatusIndicator">
+    <div className="col-5 offset-md-1 StatusIndicator">
       <p>
         <FontAwesomeIcon icon={faChartSimple} />
         &ensp;{text}
