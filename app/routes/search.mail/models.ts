@@ -12,4 +12,5 @@ export interface Message {
 export interface MessageResult {
   messages: Message[];
   totalCount: number;
+  overMaxWindow: boolean;
 }

@@ -9,4 +9,5 @@ export interface Page {
 export interface PageResult {
   pages: Page[];
   totalCount: number;
+  overMaxWindow: boolean;
 }

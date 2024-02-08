@@ -22,7 +22,7 @@ import HeinekenError from "~/components/heineken-error";
 import { Pager, links as pagerLinks } from "~/components/pager";
 import SortButton from "~/components/sort-button";
 import { StatusIndicator } from "~/components/status-indicator";
-import { ELASTIC_SEARCH_MAX_SEARCH_WINDOW } from "~/utils";
+import { calculateTotalPages } from "~/utils";
 
 const sortOrderOptions = [
   { value: "s", label: "Score" },
@@ -153,17 +153,16 @@ export default function Mail() {
   };
 
   const render = (messageResult: MessageResult) => {
-    // We cannot search over the window limit of elasticsearch.
-    const totalPages = Math.min(
-      Math.ceil(messageResult.totalCount / SEARCH_SIZE),
-      Math.floor(ELASTIC_SEARCH_MAX_SEARCH_WINDOW / SEARCH_SIZE),
-    );
     return (
       <div className="mt-3">
         <MessageList messageResult={messageResult} mailBaseURL={mailBaseURL} />
         <Pager
           currentPage={page}
-          totalPages={totalPages}
+          totalPages={calculateTotalPages(
+            SEARCH_SIZE,
+            messageResult.totalCount,
+            messageResult.overMaxWindow,
+          )}
           onNewPage={onNewPage}
         />
       </div>
@@ -181,7 +180,7 @@ export default function Mail() {
                 currentPage={page}
                 totalCount={mr.totalCount}
                 requesting={requesting}
-                overMaxWindow={ELASTIC_SEARCH_MAX_SEARCH_WINDOW < mr.totalCount}
+                overMaxWindow={mr.overMaxWindow}
               />
             )}
           </Await>

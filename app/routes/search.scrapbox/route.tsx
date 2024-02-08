@@ -22,7 +22,7 @@ import HeinekenError from "~/components/heineken-error";
 import { Pager, links as pagerLinks } from "~/components/pager";
 import SortButton from "~/components/sort-button";
 import { StatusIndicator } from "~/components/status-indicator";
-import { ELASTIC_SEARCH_MAX_SEARCH_WINDOW } from "~/utils";
+import { calculateTotalPages } from "~/utils";
 
 const sortOrderOptions = [
   { value: "s", label: "Score" },
@@ -143,17 +143,16 @@ export default function ScrapBox() {
   };
 
   const render = (pageResult: PageResult) => {
-    // We cannot search over the window limit of elasticsearch.
-    const totalPages = Math.min(
-      Math.ceil(pageResult.totalCount / SEARCH_SIZE),
-      Math.floor(ELASTIC_SEARCH_MAX_SEARCH_WINDOW / SEARCH_SIZE),
-    );
     return (
       <div className="mt-3">
         <PageList pageResult={pageResult} scrapboxBaseURL={scrapboxBaseURL} />
         <Pager
           currentPage={page}
-          totalPages={totalPages}
+          totalPages={calculateTotalPages(
+            SEARCH_SIZE,
+            pageResult.totalCount,
+            pageResult.overMaxWindow,
+          )}
           onNewPage={onNewPage}
         />
       </div>
@@ -171,7 +170,7 @@ export default function ScrapBox() {
                 currentPage={page}
                 totalCount={pr.totalCount}
                 requesting={requesting}
-                overMaxWindow={ELASTIC_SEARCH_MAX_SEARCH_WINDOW < pr.totalCount}
+                overMaxWindow={pr.overMaxWindow}
               />
             )}
           </Await>

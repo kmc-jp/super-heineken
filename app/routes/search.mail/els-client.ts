@@ -25,6 +25,7 @@ export function createMessageResultFromResponse(json: any): MessageResult {
       createMessageFromResponse(item),
     ),
     totalCount: json.hits.total.value,
+    overMaxWindow: json.hits.total.relation === "gte",
   };
 }
 
@@ -144,6 +145,7 @@ export async function requestSearch({
 
   const response = await fetch(url);
   if (!response.ok) {
+    console.error(await response.json());
     throw new Response(
       `Invalid response from the backend elasticsearch server: ${response.statusText}`,
       { status: 500 },

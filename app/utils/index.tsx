@@ -3,8 +3,6 @@ export function truncate(text: string, max: number) {
   else return text;
 }
 
-export const ELASTIC_SEARCH_MAX_SEARCH_WINDOW = 10000;
-
 const ELASTIC_QUERY_STRING_ESACPE_CHARS = ['"', "\\"];
 
 // Baisis: Split by space and call them as words. Words are joined with AND and quoted
@@ -171,3 +169,12 @@ export function toQueryString(query: string) {
     })
     .join(" AND ");
 }
+
+export const calculateTotalPages = (
+  searchSize: number,
+  totalCount: number,
+  overMaxWindow: boolean,
+) => {
+  // overMaxWindow のときは最後のページが max window 以上の結果を指してしまいエラーになる
+  return (overMaxWindow ? Math.floor : Math.ceil)(totalCount / searchSize);
+};

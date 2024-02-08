@@ -220,6 +220,7 @@ export default function Help() {
           `Index の都合により 1 文字では検索できません。
           <a href="${pukiwikiBaseURL}?cmd=search">PukiWiki の検索機能</a>
            を使って下さい。`,
+          `Elasticsearch の仕様で 10000 件を超える検索結果は出力されません。`,
           `<code>C#</code> や <code>C++</code> といった記号でも検索可能です。`,
           `更新されたばかりのページはクロールされるまで検索に出ません。`,
         ]}
