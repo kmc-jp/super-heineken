@@ -1,7 +1,10 @@
+import {
+  SearchBox,
+  links as searchBoxLinks,
+} from "../../components/search-box";
 import { SEARCH_SIZE, buildMailSearch, requestSearch } from "./els-client";
 import { MessageList, links as pageListLinks } from "./message-list";
 import { MessageResult } from "./models";
-import { SearchBox, links as searchBoxLinks } from "./search-box";
 import { parseSearchParams, setNewOrder, setNewPage } from "./utils";
 import {
   LinksFunction,
@@ -56,11 +59,22 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   });
 };
 
-const createSearchBox = (params: URLSearchParams) => {
-  const { query, order, advanced } = parseSearchParams(params);
+const createSearchBox = (
+  params: URLSearchParams,
+  defaultCategories: string[],
+  allCategories: string[],
+) => {
+  const { query, order, advanced, categories } = parseSearchParams(params);
+  const types = allCategories.map((v) => {
+    return { value: v, label: v };
+  });
   return (
     <SearchBox
       order={order}
+      types={types}
+      action={"/search/mail"}
+      defaultTypes={categories ?? defaultCategories}
+      typeInputName="category"
       defaultQuery={query || ""}
       defaultAdvanced={advanced}
     />

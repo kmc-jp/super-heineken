@@ -1,7 +1,6 @@
 import { SEARCH_SIZE, buildScrapboxSearch, requestSearch } from "./els-client";
 import { PageResult } from "./models";
 import { PageList, links as pageListLinks } from "./page-list";
-import { SearchBox, links as searchBoxLinks } from "./search-box";
 import { parseSearchParams, setNewOrder, setNewPage } from "./utils";
 import {
   LinksFunction,
@@ -20,6 +19,7 @@ import {
 import { Suspense, useContext } from "react";
 import HeinekenError from "~/components/heineken-error";
 import { Pager, links as pagerLinks } from "~/components/pager";
+import { SearchBox, links as searchBoxLinks } from "~/components/search-box";
 import SortButton from "~/components/sort-button";
 import { StatusIndicator } from "~/components/status-indicator";
 import { EnvContext } from "~/contexts/env";
@@ -59,6 +59,10 @@ const createSearchBox = (params: URLSearchParams) => {
   return (
     <SearchBox
       order={order}
+      types={[]}
+      action={"/search/scrapbox"}
+      defaultTypes={[]}
+      typeInputName="type"
       defaultQuery={query || ""}
       defaultAdvanced={advanced}
     />
