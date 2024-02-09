@@ -17,11 +17,12 @@ import {
   useRouteError,
   useSearchParams,
 } from "@remix-run/react";
-import { Suspense } from "react";
+import { Suspense, useContext } from "react";
 import HeinekenError from "~/components/heineken-error";
 import { Pager, links as pagerLinks } from "~/components/pager";
 import SortButton from "~/components/sort-button";
 import { StatusIndicator } from "~/components/status-indicator";
+import { EnvContext } from "~/contexts/env";
 import { calculateTotalPages } from "~/utils";
 
 const sortOrderOptions = [
@@ -50,9 +51,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   const search = buildScrapboxSearch(order, page, advanced, query);
   const pageResult = requestSearch(search);
 
-  const scrapboxBaseURL = process.env.HEINEKEN_SCRAPBOX_BASE_URL!;
-
-  return defer({ pageResult, scrapboxBaseURL });
+  return defer({ pageResult });
 };
 
 const createSearchBox = (params: URLSearchParams) => {
@@ -133,7 +132,8 @@ export default function Scrapbox() {
 
   const [searchParams, setSearchParams] = useSearchParams();
   const { page } = parseSearchParams(searchParams);
-  const { pageResult, scrapboxBaseURL } = useLoaderData<typeof loader>();
+  const { scrapboxBaseURL } = useContext(EnvContext);
+  const { pageResult } = useLoaderData<typeof loader>();
 
   const onNewPage = (page: number) => {
     setSearchParams((prev) => {

@@ -17,11 +17,12 @@ import {
   useRouteError,
   useSearchParams,
 } from "@remix-run/react";
-import { Suspense } from "react";
+import { Suspense, useContext } from "react";
 import HeinekenError from "~/components/heineken-error";
 import { Pager, links as pagerLinks } from "~/components/pager";
 import SortButton from "~/components/sort-button";
 import { StatusIndicator } from "~/components/status-indicator";
+import { EnvContext } from "~/contexts/env";
 import { calculateTotalPages } from "~/utils";
 
 const sortOrderOptions = [
@@ -50,9 +51,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   const search = buildPukiWikiSearch(order, page, advanced, query);
   const pageResult = requestSearch(search);
 
-  const pukiwikiBaseURL = process.env.HEINEKEN_PUKIWIKI_BASE_URL!;
-
-  return defer({ pageResult, pukiwikiBaseURL });
+  return defer({ pageResult });
 };
 
 const createSearchBox = (params: URLSearchParams) => {
@@ -133,7 +132,8 @@ export default function PukiWiki() {
 
   const [searchParams, setSearchParams] = useSearchParams();
   const { page } = parseSearchParams(searchParams);
-  const { pageResult, pukiwikiBaseURL } = useLoaderData<typeof loader>();
+  const { pukiWikiBaseURL } = useContext(EnvContext);
+  const { pageResult } = useLoaderData<typeof loader>();
 
   const onNewPage = (page: number) => {
     setSearchParams((prev) => {
@@ -145,7 +145,7 @@ export default function PukiWiki() {
   const render = (pageResult: PageResult) => {
     return (
       <div className="mt-3">
-        <PageList pageResult={pageResult} pukiwikiBaseURL={pukiwikiBaseURL} />
+        <PageList pageResult={pageResult} pukiwikiBaseURL={pukiWikiBaseURL} />
         <Pager
           currentPage={page}
           totalPages={calculateTotalPages(

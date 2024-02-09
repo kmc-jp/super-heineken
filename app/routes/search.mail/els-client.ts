@@ -1,5 +1,5 @@
 import { Message, MessageResult } from "./models";
-import { toQueryString } from "~/utils";
+import { getServerEnv, toQueryString } from "~/utils";
 
 export const SEARCH_SIZE = 35;
 
@@ -32,7 +32,7 @@ export function createMessageResultFromResponse(json: any): MessageResult {
 export function buildMailSearch(
   order: string,
   page: number,
-  categories: string[],
+  categories: string[] | undefined,
   useRawQuery: boolean,
   query?: string,
 ) {
@@ -47,7 +47,7 @@ export function buildMailSearch(
     size: SEARCH_SIZE,
     from: (page - 1) * SEARCH_SIZE,
     order: order,
-    categories: categories,
+    categories: categories ?? getServerEnv().mailDefaultCategories,
   };
 }
 
@@ -66,6 +66,8 @@ export async function requestSearch({
   order,
   categories,
 }: MailSearch) {
+  const { elasticSearchURL, elasticSearchMailIndex } = getServerEnv();
+
   // boot by some fields
   const fields = ["subject^3", "from^4", "to^4", "body"];
 
@@ -136,9 +138,7 @@ export async function requestSearch({
 
   const url = new URL(
     "_search",
-    process.env.HEINEKEN_ELASTIC_SEARCH_URL! +
-      process.env.HEINEKEN_ELASTIC_SEARCH_MAIL_INDEX! +
-      "/",
+    elasticSearchURL + elasticSearchMailIndex + "/",
   );
   url.searchParams.append("source", JSON.stringify(queryJson));
   url.searchParams.append("source_content_type", "application/json");

@@ -1,3 +1,5 @@
+import { Env } from "~/models";
+
 export function truncate(text: string, max: number) {
   if (text.length > max) return text.substring(0, max) + "\u2026";
   else return text;
@@ -177,4 +179,30 @@ export const calculateTotalPages = (
 ) => {
   // overMaxWindow のときは最後のページが max window 以上の結果を指してしまいエラーになる
   return (overMaxWindow ? Math.floor : Math.ceil)(totalCount / searchSize);
+};
+
+export const getServerEnv = () => {
+  const defaultCategories = process.env
+    .HEINEKEN_MAIL_DEFAULT_CATEGORIES!.split(",")
+    .filter((v) => v !== "");
+
+  const allCategories = process.env
+    .HEINEKEN_MAIL_CATEGORIES!.split(",")
+    .filter((v) => v !== "");
+
+  const env: Env = {
+    elasticSearchURL: process.env.HEINEKEN_ELASTIC_SEARCH_URL!,
+    elasticSearchPukiWikiIndex:
+      process.env.HEINEKEN_ELASTIC_SEARCH_PUKIWIKI_INDEX!,
+    elasticSearchMailIndex: process.env.HEINEKEN_ELASTIC_SEARCH_MAIL_INDEX!,
+    elasticSearchScrapboxIndex:
+      process.env.HEINEKEN_ELASTIC_SEARCH_SCRAPBOX_INDEX!,
+    pukiWikiBaseURL: process.env.HEINEKEN_PUKIWIKI_BASE_URL!,
+    mailCategories: allCategories,
+    mailDefaultCategories: defaultCategories,
+    mailBaseURL: process.env.HEINEKEN_MAIL_BASE_URL!,
+    scrapboxBaseURL: process.env.HEINEKEN_SCRAPBOX_BASE_URL!,
+  };
+
+  return env;
 };

@@ -1,5 +1,5 @@
 import { Page, PageResult } from "./models";
-import { toQueryString } from "~/utils";
+import { getServerEnv, toQueryString } from "~/utils";
 
 export const SEARCH_SIZE = 35;
 
@@ -57,6 +57,8 @@ export async function requestSearch({
   from,
   order,
 }: PukiWikiSearch) {
+  const { elasticSearchURL, elasticSearchPukiWikiIndex } = getServerEnv();
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const queryJson: any = {
     query: {
@@ -130,9 +132,7 @@ export async function requestSearch({
 
   const url = new URL(
     "_search",
-    process.env.HEINEKEN_ELASTIC_SEARCH_URL! +
-      process.env.HEINEKEN_ELASTIC_SEARCH_PUKIWIKI_INDEX! +
-      "/",
+    elasticSearchURL + elasticSearchPukiWikiIndex + "/",
   );
   url.searchParams.append("source", JSON.stringify(queryJson));
   url.searchParams.append("source_content_type", "application/json");

@@ -17,11 +17,12 @@ import {
   useRouteError,
   useSearchParams,
 } from "@remix-run/react";
-import { Suspense } from "react";
+import { Suspense, useContext } from "react";
 import HeinekenError from "~/components/heineken-error";
 import { Pager, links as pagerLinks } from "~/components/pager";
 import SortButton from "~/components/sort-button";
 import { StatusIndicator } from "~/components/status-indicator";
+import { EnvContext } from "~/contexts/env";
 import { calculateTotalPages } from "~/utils";
 
 const sortOrderOptions = [
@@ -43,26 +44,16 @@ export const links: LinksFunction = () => [
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const searchParams = new URL(request.url).searchParams;
 
-  const defaultCategories = process.env
-    .HEINEKEN_MAIL_DEFAULT_CATEGORIES!.split(",")
-    .filter((v) => v !== "");
-
   const { query, page, order, categories, advanced } =
     parseSearchParams(searchParams);
 
   // async 内で throw Response すると Errorboundary の Error がうまくとれないのでパースは non-async でやる
-  const search = buildMailSearch(
-    order,
-    page,
-    categories ?? defaultCategories,
-    advanced,
-    query,
-  );
+  const search = buildMailSearch(order, page, categories, advanced, query);
   const messageResult = requestSearch(search);
 
-  const mailBaseURL = process.env.HEINEKEN_MAIL_BASE_URL!;
-
-  return defer({ messageResult, mailBaseURL });
+  return defer({
+    messageResult,
+  });
 };
 
 const createSearchBox = (params: URLSearchParams) => {
@@ -113,6 +104,7 @@ export function ErrorBoundary() {
   const err = useRouteError();
   console.error(err);
   const [searchParams, setSearchParams] = useSearchParams();
+  const { mailDefaultCategories, mailCategories } = useContext(EnvContext);
 
   const msg = isRouteErrorResponse(err)
     ? err.data
@@ -122,7 +114,7 @@ export function ErrorBoundary() {
 
   return (
     <div>
-      {createSearchBox(searchParams)}
+      {createSearchBox(searchParams, mailDefaultCategories, mailCategories)}
       <div className="row">
         {createRequestingStatusIndicator(searchParams)}
         {createOrderSelect(searchParams, setSearchParams)}
@@ -143,7 +135,9 @@ export default function Mail() {
 
   const [searchParams, setSearchParams] = useSearchParams();
   const { page } = parseSearchParams(searchParams);
-  const { messageResult, mailBaseURL } = useLoaderData<typeof loader>();
+  const { mailBaseURL, mailDefaultCategories, mailCategories } =
+    useContext(EnvContext);
+  const { messageResult } = useLoaderData<typeof loader>();
 
   const onNewPage = (page: number) => {
     setSearchParams((prev) => {
@@ -171,7 +165,7 @@ export default function Mail() {
 
   return (
     <div>
-      {createSearchBox(searchParams)}
+      {createSearchBox(searchParams, mailDefaultCategories, mailCategories)}
       <div className="row">
         <Suspense fallback={createRequestingStatusIndicator(searchParams)}>
           <Await resolve={messageResult}>

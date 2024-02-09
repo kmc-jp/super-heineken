@@ -1,6 +1,8 @@
 import HeinekenError from "./components/heineken-error";
+import { EnvContext } from "./contexts/env";
 import Navbar from "./navbar";
 import styles from "./root.css";
+import { getServerEnv } from "./utils";
 // Required to supress size change on the first icon load
 import "@fortawesome/fontawesome-svg-core/styles.css";
 import { cssBundleHref } from "@remix-run/css-bundle";
@@ -13,6 +15,7 @@ import {
   Scripts,
   ScrollRestoration,
   isRouteErrorResponse,
+  useLoaderData,
   useRouteError,
 } from "@remix-run/react";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -30,6 +33,11 @@ export const links: LinksFunction = () => [
   { rel: "stylesheet", href: styles },
   ...(cssBundleHref ? [{ rel: "stylesheet", href: cssBundleHref }] : []),
 ];
+
+// Return process environment variables
+export const loader = async () => {
+  return { env: getServerEnv() };
+};
 
 export function ErrorBoundary() {
   const err = useRouteError();
@@ -62,23 +70,27 @@ export function ErrorBoundary() {
 }
 
 export default function Root() {
+  const { env } = useLoaderData<typeof loader>();
+
   return (
-    <html lang="ja">
-      <head>
-        <meta charSet="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <Meta />
-        <Links />
-      </head>
-      <body>
-        <div className="container">
-          <Navbar />
-          <Outlet />
-        </div>
-        <ScrollRestoration />
-        <Scripts />
-        <LiveReload />
-      </body>
-    </html>
+    <EnvContext.Provider value={env}>
+      <html lang="ja">
+        <head>
+          <meta charSet="utf-8" />
+          <meta name="viewport" content="width=device-width, initial-scale=1" />
+          <Meta />
+          <Links />
+        </head>
+        <body>
+          <div className="container">
+            <Navbar />
+            <Outlet />
+          </div>
+          <ScrollRestoration />
+          <Scripts />
+          <LiveReload />
+        </body>
+      </html>
+    </EnvContext.Provider>
   );
 }
