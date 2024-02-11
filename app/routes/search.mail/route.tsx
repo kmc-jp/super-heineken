@@ -65,7 +65,10 @@ const createSearchBox = (
   allCategories: string[],
 ) => {
   const { query, order, advanced, categories } = parseSearchParams(params);
-  const types = allCategories.map((v) => {
+  const extraCategories = (categories ?? []).filter(
+    (v) => !allCategories.includes(v),
+  );
+  const types = [...extraCategories, ...allCategories].map((v) => {
     return { value: v, label: v };
   });
   return (
