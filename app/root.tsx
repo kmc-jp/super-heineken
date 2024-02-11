@@ -1,6 +1,6 @@
 import HeinekenError from "./components/heineken-error";
+import Navbar from "./components/navbar";
 import { EnvContext } from "./contexts/env";
-import Navbar from "./navbar";
 import styles from "./root.css";
 import { getServerEnv } from "./utils";
 // Required to supress size change on the first icon load

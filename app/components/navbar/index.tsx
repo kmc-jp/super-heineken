@@ -1,6 +1,6 @@
-import { Collapse } from "./utils/bootstrap.client";
 import { Link, NavLink } from "@remix-run/react";
 import { useRef } from "react";
+import { Collapse } from "~/utils/bootstrap.client";
 
 const onItemClick = (nav: HTMLElement | null) => {
   if (nav !== null) {
