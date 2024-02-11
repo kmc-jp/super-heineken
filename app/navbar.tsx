@@ -1,6 +1,16 @@
+import { Collapse } from "./utils/bootstrap.client";
 import { Link, NavLink } from "@remix-run/react";
+import { useRef } from "react";
+
+const onItemClick = (nav: HTMLElement | null) => {
+  if (nav !== null) {
+    Collapse.getInstance(nav)?.hide();
+  }
+};
 
 export default function Navbar() {
+  const collapseRef = useRef<HTMLDivElement>(null);
+
   return (
     <nav
       className="navbar navbar-expand-sm bg-dark fixed-top"
@@ -20,18 +30,34 @@ export default function Navbar() {
           <span className="navbar-toggler-icon"></span>
         </button>
 
-        <div id="navbar" className="collapse navbar-collapse">
+        <div id="navbar" className="collapse navbar-collapse" ref={collapseRef}>
           <div className="navbar-nav">
-            <NavLink to="/search/pukiwiki" className="nav-item nav-link">
+            <NavLink
+              to="/search/pukiwiki"
+              className="nav-item nav-link"
+              onClick={() => onItemClick(collapseRef.current)}
+            >
               PukiWiki
             </NavLink>
-            <NavLink to="/search/scrapbox" className="nav-item nav-link">
+            <NavLink
+              to="/search/scrapbox"
+              className="nav-item nav-link"
+              onClick={() => onItemClick(collapseRef.current)}
+            >
               Scrapbox
             </NavLink>
-            <NavLink to="/search/mail" className="nav-item nav-link">
+            <NavLink
+              to="/search/mail"
+              className="nav-item nav-link"
+              onClick={() => onItemClick(collapseRef.current)}
+            >
               Mail
             </NavLink>
-            <NavLink to="/help" className="nav-item nav-link">
+            <NavLink
+              to="/help"
+              className="nav-item nav-link"
+              onClick={() => onItemClick(collapseRef.current)}
+            >
               Help
             </NavLink>
           </div>
