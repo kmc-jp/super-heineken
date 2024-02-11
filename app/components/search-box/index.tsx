@@ -56,7 +56,7 @@ export function SearchBox(props: SearchBoxProps) {
   // https://github.com/remix-run/remix/issues/1136
   return (
     <div className="SearchBox row">
-      <div className="col-md-8 offset-md-2 mt-4 mt-sm-5 mb-4">
+      <div className="col-md-8 offset-md-2 mt-4 mt-sm-5 mb-3 mb-sm-4">
         <Form action={props.action} preventScrollReset ref={formRef}>
           <div className="input-group input-group-lg">
             <input
@@ -74,7 +74,7 @@ export function SearchBox(props: SearchBoxProps) {
             </button>
           </div>
           <div className="row">
-            <div className="col-auto mt-3 ms-1 align-items-center d-flex">
+            <div className="col-auto mt-3 ms-md-1 align-items-center d-flex">
               <div className="form-switch form-check">
                 <input
                   className="form-check-input"
@@ -99,7 +99,7 @@ export function SearchBox(props: SearchBoxProps) {
                 </label>
               </div>
             </div>
-            <div className="col-auto mt-3 ms-auto me-1 text-end ps-0">
+            <div className="col-auto mt-3 ms-auto me-md-1 text-end ps-0">
               <Select
                 options={props.types}
                 isMulti={true}

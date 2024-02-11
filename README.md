@@ -24,12 +24,12 @@ $ npm run dev
   - `routes/search.pukiwiki.tsx` は `/search/pukiwiki` に対応します
   - 詳細 https://remix.run/docs/en/main/file-conventions/routes
 
-- tsx ではなくディレクトリにすることもできます。その時は、ディレクトリ内の `route.tsx` ファイルが対応したコンポーネントになります
+- tsx ファイルではなくディレクトリにすることもできます。その時は、ディレクトリ内の `route.tsx` ファイルが対応したコンポーネントになります(例: `routes/search.pukiwiki/route.tsx`)。
 
   - その他のファイルは `routes.tsx` から import して使うことになります
 
 - Remix には Nested routes という特徴があり、`routes/search.tsx` と `routes/search.pukiwiki.tsx` がある場合、
-  `/search/pukiwiki` を開くと `search.tsx` 内で定義されたコンポーネントの中に `search.pukiwiki.tsx` のコンポーネントが描画されます
+  `/search/pukiwiki` を開くと `search.tsx` 内で定義されたコンポーネントの中（`<Outlet />`）に `search.pukiwiki.tsx` のコンポーネントが描画されます
   - 詳細 https://remix.run/docs/en/main/discussion/routes
 
 ## Deployment
@@ -53,6 +53,14 @@ Note: You can connect to KMC elasticsearch from local by `kubectl port-forward`
 ```
 $ kubectl port-forward services/heineken-elasticsearch 9200 9200
 ```
+
+### Styles
+
+- Margin や Padding の設定は基本的に bootstrap のクラスを使って行っています
+  - https://getbootstrap.com/docs/5.3/layout/grid/
+- 画面幅の小さいデバイス用に処理を分ける際は、概ね以下のルールに従っています
+  - 横は md 以下で縮める
+  - 縦は sm 以下で縮める
 
 ### DIY
 
