@@ -6,7 +6,7 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { LinksFunction } from "@remix-run/node";
 import { Form, Link, useSubmit } from "@remix-run/react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import Select from "react-select";
 
 export const links: LinksFunction = () => [{ rel: "stylesheet", href: styles }];
@@ -101,6 +101,12 @@ export function SearchBox(props: SearchBoxProps) {
             </div>
             <div className="col-auto mt-3 ms-auto me-md-1 text-end ps-0">
               <Select
+                instanceId={
+                  // https://github.com/JedWatson/react-select/issues/5459
+                  // https://stackoverflow.com/a/73117797/4205654
+                  // Still has an issue: https://github.com/JedWatson/react-select/issues/3590
+                  useId()
+                }
                 options={props.types}
                 isMulti={true}
                 isClearable={false}

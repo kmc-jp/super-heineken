@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useId, useState } from "react";
 import Select from "react-select";
 
 interface SortOrderOption {
@@ -32,6 +32,12 @@ export default function SortButton(props: SortButtonProps) {
     <>
       <div className="col-auto ms-auto text-end ps-0">
         <Select
+          instanceId={
+            // https://github.com/JedWatson/react-select/issues/5459
+            // https://stackoverflow.com/a/73117797/4205654
+            // Still has an issue: https://github.com/JedWatson/react-select/issues/3590
+            useId()
+          }
           options={props.options}
           value={getOrderOption(props.options, order)}
           onChange={(e) => {
